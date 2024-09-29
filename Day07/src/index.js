@@ -22,15 +22,19 @@ const options = [
   { value: 'typescript', text: 'TypeScript' },
 ];
 
+// DocumentFragment를 사용하여 성능 최적화
+const fragment = document.createDocumentFragment();
+
 options.forEach((option) => {
   const newOption = document.createElement('option');
   newOption.textContent = option.text;
   newOption.setAttribute('value', option.value);
 
-  $select.appendChild(newOption);
+  fragment.appendChild(newOption); // fragment에 추가
 });
 
 // 단, createElement, appendChild를 사용해서 생성해주세요.
+$select.appendChild(fragment); // 한번에 DOM에 추가
 $app.appendChild($select);
 
 // select 태그의 값을 변경할 때 마다, 변경된 값을 출력하는 기능도 작성해주세요.
