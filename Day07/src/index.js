@@ -22,19 +22,15 @@ const options = [
   { value: 'typescript', text: 'TypeScript' },
 ];
 
-// DocumentFragment를 사용하여 성능 최적화
-const fragment = document.createDocumentFragment();
-
-options.forEach((option) => {
+const optionElements = options.map((option) => {
   const newOption = document.createElement('option');
   newOption.textContent = option.text;
   newOption.setAttribute('value', option.value);
-
-  fragment.appendChild(newOption); // fragment에 추가
+  return newOption;
 });
 
 // 단, createElement, appendChild를 사용해서 생성해주세요.
-$select.appendChild(fragment); // 한번에 DOM에 추가
+$select.append(...optionElements); // 한번에 DOM에 추가
 $app.appendChild($select);
 
 // select 태그의 값을 변경할 때 마다, 변경된 값을 출력하는 기능도 작성해주세요.
@@ -42,23 +38,25 @@ $select.addEventListener('input', (event) => {
   console.log(event.target.value);
 });
 
-// const $option1 = document.createElement('option');
-// $option1.textContent = 'JavaScript';
-// $option1.setAttribute('value', 'javascript');
+// DOM 조작을 최소화하는 방식으로 성능을 개선하기
 
-// const $option2 = document.createElement('option');
-// $option2.textContent = 'Next.js';
-// $option2.setAttribute('value', 'next');
+// 1. DocumentFragment를 사용하는 방법
+// const fragment = document.createDocumentFragment();
+// options.forEach((option) => {
+//   const newOption = document.createElement('option');
+//   newOption.textContent = option.text;
+//   newOption.setAttribute('value', option.value);
+//   fragment.appendChild(newOption); 
+// });
+// $select.appendChild(fragment);
 
-// const $option3 = document.createElement('option');
-// $option3.textContent = 'React.js';
-// $option3.setAttribute('value', 'react');
 
-// const $option4 = document.createElement('option');
-// $option4.textContent = 'TypeScript';
-// $option4.setAttribute('value', 'typescript');
+// 2. 배열에 임시로 저장 후 append()를 사용하는 방법
 
-// $select.appendChild($option1);
-// $select.appendChild($option2);
-// $select.appendChild($option3);
-// $select.appendChild($option4);
+// const optionElements = options.map((option) => {
+//   const newOption = document.createElement('option');
+//   newOption.textContent = option.text;
+//   newOption.setAttribute('value', option.value);
+//   return newOption;
+// });
+// $select.append(...optionElements);
