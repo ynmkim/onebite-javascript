@@ -3,8 +3,8 @@ const API_URL = 'https://animal-api-two.vercel.app/';
 const $content = document.querySelector('div.content');
 let imgElements = [];
 
-async function getAnimal() {
-  let res = await fetch(API_URL);
+async function getAnimal(name) {
+  let res = await fetch(`${API_URL}${name}`);
 
   try {
     if (res) {
@@ -21,4 +21,4 @@ async function getAnimal() {
   }
 }
 
-getAnimal();
+getAnimal('panda');
