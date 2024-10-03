@@ -7,16 +7,16 @@ export default function TabBar({ $app, initialState, onClick }) {
   this.$target.className = 'tab-bar';
   $app.appendChild(this.$target);
 
-  this.tabButtons = () => {
-    let tabButtons = `<button type="button" id="all">전체</button><button type="button" id="penguin">펭귄</button><button type="button" id="panda">팬더</button><button type="button" id="koala">코알라</button>`;
+  this.template = () => {
+    let temp = `<button type="button" id="all">전체</button><button type="button" id="penguin">펭귄</button><button type="button" id="panda">팬더</button><button type="button" id="koala">코알라</button>`;
 
-    return tabButtons;
+    return temp;
   };
 
   this.render = () => {
     // UI 렌더링 로직
-    // console.log(this.tabButtons());
-    this.$target.innerHTML = this.tabButtons();
+    // console.log(this.temp());
+    this.$target.innerHTML = this.template();
     let $currentTab = document.getElementById(this.state);
     // $currentTab ? ($currentTab.className = 'clicked') : '';
     $currentTab && ($currentTab.className = 'clicked');
