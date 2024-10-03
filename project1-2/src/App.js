@@ -4,7 +4,7 @@ import { getAnimals } from './components/api.js';
 
 export default function App($app) {
   this.state = {
-    currentTab: 'all',
+    currentTab: window.location.pathname.replace('/', '') || 'all',
     photos: [],
   };
 
@@ -12,6 +12,8 @@ export default function App($app) {
     $app,
     initialState: '',
     onClick: async (name) => {
+      history.pushState(null, `${name} 사진`, name);
+
       this.setState({
         ...this.state,
         currentTab: name,
@@ -31,10 +33,24 @@ export default function App($app) {
     content.setState(this.state.photos);
   };
 
+  window.addEventListener('popstate', async () => {
+    const tabName = window.location.pathname.replace('/', '') || 'all';
+    const photos = await getAnimals(tabName === 'all' ? '' : tabName);
+
+    this.setState({
+      ...this.state,
+      currentTab: tabName,
+      photos: photos,
+    });
+  });
+
   // 모든 동물 데이터 가져오기
   const init = async () => {
     try {
-      const initialPhotos = await getAnimals();
+      const currentTab = this.state.currentTab;
+      const initialPhotos = await getAnimals(
+        currentTab === 'all' ? '' : currentTab
+      );
       this.setState({
         ...this.state,
         photos: initialPhotos,
