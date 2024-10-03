@@ -8,17 +8,12 @@ export default function App($app) {
     photos: [],
   };
 
-  const tabBar = new TabBar({
+  const tab = new TabBar({
     $app,
-    initialState: '',
+    initialState: this.state.currentTab,
     onClick: async (name) => {
       history.pushState(null, `${name} 사진`, name);
-
-      this.setState({
-        ...this.state,
-        currentTab: name,
-        photos: await getAnimals(name === 'all' ? '' : name),
-      });
+      this.updateContent(name);
     },
   });
 
@@ -29,35 +24,28 @@ export default function App($app) {
 
   this.setState = (newState) => {
     this.state = newState;
-    tabBar.setState(this.state.currentTab); // 컴포넌트에 필요한 상태 값들을 각각의 인스턴스들이 갖고 있는 setState 메서드의 인수로 전달
+    tab.setState(this.state.currentTab); // 컴포넌트에 필요한 상태 값들을 각각의 인스턴스들이 갖고 있는 setState 메서드의 인수로 전달
     content.setState(this.state.photos);
   };
 
-  window.addEventListener('popstate', async () => {
-    const tabName = window.location.pathname.replace('/', '') || 'all';
-    const photos = await getAnimals(tabName === 'all' ? '' : tabName);
+  this.updateContent = async (tabName) => {
+    const currentTab = tabName === 'all' ? '' : tabName;
+    const photos = await getAnimals(currentTab);
 
     this.setState({
       ...this.state,
       currentTab: tabName,
       photos: photos,
     });
+  };
+
+  window.addEventListener('popstate', () => {
+    this.updateContent(window.location.pathname.replace('/', '') || 'all');
   });
 
   // 모든 동물 데이터 가져오기
   const init = async () => {
-    try {
-      const currentTab = this.state.currentTab;
-      const initialPhotos = await getAnimals(
-        currentTab === 'all' ? '' : currentTab
-      );
-      this.setState({
-        ...this.state,
-        photos: initialPhotos,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    this.updateContent(this.state.currentTab);
   };
 
   init();
