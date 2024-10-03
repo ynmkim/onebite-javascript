@@ -32,17 +32,18 @@ img {
   top: 0;
 }
 
-.tab-bar div {
+.tab-bar button {
+  border: 0;
   background-color: #d1d8e4;
   padding: 20px 0px;
   cursor: pointer;
 }
 
-.tab-bar .clicked {
+.tab-bar button.clicked {
   background-color: white !important;
 }
 
-.tab-bar div:hover {
+.tab-bar button:hover {
   background-color: white;
 }
 

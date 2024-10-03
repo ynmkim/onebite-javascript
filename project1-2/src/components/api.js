@@ -1,14 +1,13 @@
 const API_URL = 'https://animal-api-two.vercel.app/';
 
-export async function getAnimals() {
-  let res = await fetch(API_URL);
-
+export async function getAnimals(name) {
   try {
+    let res = await fetch(name ? `${API_URL}${name}` : API_URL);
     if (res) {
       let data = await res.json();
-      return data;
+      return data.photos;
     }
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log(err);
   }
 }
