@@ -116,8 +116,11 @@ li {
 }
 
 /* CITY LIST */
-.city-list {
+.city-list-container {
   padding: 15px 12%;
+}
+
+.city-list {
   display: grid;
   grid-template-columns: repeat(
     auto-fill,
@@ -152,7 +155,7 @@ li {
   font-size: var(--small);
 }
 
-.city-list .add-items-btn {
+.city-list-container .add-items-btn {
   width: 100%;
   color: var(--gray);
   background-color: white;
@@ -164,7 +167,7 @@ li {
   margin-bottom: 20px;
 }
 
-.city-list .add-items-btn:hover {
+.city-list-container .add-items-btn:hover {
   background-color: var(--light-gray);
 }
 

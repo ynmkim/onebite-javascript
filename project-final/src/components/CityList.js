@@ -1,12 +1,12 @@
-export default function CityList({ $app, initialState }) {
+export default function CityList({ $app, initialState, handleLoadMore }) {
   this.state = initialState;
-  this.$target = document.createElement('ul');
-  this.$target.className = 'city-list';
-
+  this.$target = document.createElement('div');
+  this.$target.className = 'city-list-container';
+  this.handleLoadMore = handleLoadMore;
   $app.appendChild(this.$target);
 
   this.template = () => {
-    let temp = [];
+    let temp = `<ul class="city-list">`;
 
     if (this.state) {
       this.state.cities.forEach((elem) => {
@@ -18,6 +18,7 @@ export default function CityList({ $app, initialState }) {
         </li>
         `;
       });
+      temp += `</ul>`;
     }
 
     return temp;
@@ -25,10 +26,21 @@ export default function CityList({ $app, initialState }) {
 
   this.render = () => {
     this.$target.innerHTML = this.template();
+
+    if (!this.state.isEnd) {
+      const $loadMoreButton = document.createElement('button');
+      $loadMoreButton.className = 'add-items-btn';
+      $loadMoreButton.textContent = '더보기';
+      this.$target.appendChild($loadMoreButton);
+
+      $loadMoreButton.addEventListener('click', () => this.handleLoadMore());
+    }
   };
+
   this.setState = (newState) => {
     this.state = newState;
     this.render();
   };
+
   this.render();
 }
