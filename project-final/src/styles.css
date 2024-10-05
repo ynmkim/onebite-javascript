@@ -36,6 +36,10 @@ a {
   color: black;
 }
 
+li {
+  list-style: none;
+}
+
 /* HEADER */
 .header {
   padding: 25px 12%;
@@ -114,9 +118,6 @@ a {
 /* CITY LIST */
 .city-list {
   padding: 15px 12%;
-}
-
-.city-list .city-items-container {
   display: grid;
   grid-template-columns: repeat(
     auto-fill,
