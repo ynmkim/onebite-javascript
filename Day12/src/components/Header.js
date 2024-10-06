@@ -46,22 +46,25 @@ export default function Header({
       this.handleClick();
     });
 
-    const $searchInput = document.getElementById('search');
-    const $searchButton = document.getElementById('search-button');
+    if (!this.state.currentPage.includes('/detail')) {
+      const $searchInput = document.getElementById('search');
+      const $searchButton = document.getElementById('search-button');
 
-    $searchInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
+      $searchInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          this.handleSearch($searchInput.value);
+        }
+      });
+
+      $searchButton.addEventListener('click', () => {
         this.handleSearch($searchInput.value);
-      }
-    });
-
-    $searchButton.addEventListener('click', () => {
-      this.handleSearch($searchInput.value);
-    });
+      });
+    }
   };
 
   this.setState = (newState) => {
     this.state = newState;
+    this.render();
   };
 
   this.render();
