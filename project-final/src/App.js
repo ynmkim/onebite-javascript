@@ -24,109 +24,127 @@ export default function App($app) {
     searchWord: getSearchWord(),
     region: '',
     cities: '',
+    currentPage: window.location.pathname,
   };
 
-  const header = new Header({
-    $app,
-    initialState: {
-      sortBy: this.state.sortBy,
-      searchWord: this.state.searchWord,
-    },
-    handleSortChange: async (sortBy) => {
-      const pageUrl = `/${this.state.region}?sort=${sortBy}`;
-      history.pushState(
-        null,
-        null,
-        this.state.searchWord
-          ? pageUrl + `&search=${this.state.searchWord}`
-          : pageUrl
-      );
-      const cities = await getCities(
-        0,
-        this.state.region,
-        sortBy,
-        this.state.searchWord
-      );
+  const renderHeader = () => {
+    new Header({
+      $app,
+      initialState: {
+        sortBy: this.state.sortBy,
+        searchWord: this.state.searchWord,
+      },
+      handleSortChange: async (sortBy) => {
+        const pageUrl = `/${this.state.region}?sort=${sortBy}`;
+        history.pushState(
+          null,
+          null,
+          this.state.searchWord
+            ? pageUrl + `&search=${this.state.searchWord}`
+            : pageUrl
+        );
+        const cities = await getCities(
+          0,
+          this.state.region,
+          sortBy,
+          this.state.searchWord
+        );
 
-      this.setState({
-        ...this.state,
-        startIdx: 0,
-        sortBy: sortBy,
-        cities: cities,
-      });
-    },
+        this.setState({
+          ...this.state,
+          startIdx: 0,
+          sortBy: sortBy,
+          cities: cities,
+        });
+      },
 
-    handleSearchWord: async (searchWord) => {
-      history.pushState(
-        null,
-        null,
-        `/${this.state.region}?sort=${this.state.sortBy}?/&search=${searchWord}`
-      );
+      handleSearchWord: async (searchWord) => {
+        history.pushState(
+          null,
+          null,
+          `/${this.state.region}?sort=${this.state.sortBy}?/&search=${searchWord}`
+        );
 
-      const cities = await getCities(
-        0,
-        this.state.region,
-        this.state.sortBy,
-        searchWord
-      );
+        const cities = await getCities(
+          0,
+          this.state.region,
+          this.state.sortBy,
+          searchWord
+        );
 
-      this.setState({
-        ...this.state,
-        startIdx: 0,
-        searchWord: searchWord,
-        cities: cities,
-      });
-    },
-  });
-  const regionList = new RegionList({
-    $app,
-    initialState: this.state.region,
-    handleRegion: async (region) => {
-      history.pushState(null, null, `${region}?sort=total`);
-      const cities = await getCities(0, region, 'total');
-      this.setState({
-        ...this.state,
-        startIdx: 0,
-        sortBy: 'tatal',
-        region: region,
-        searchWord: '',
-        cities: cities,
-      });
-    },
-  });
+        this.setState({
+          ...this.state,
+          startIdx: 0,
+          searchWord: searchWord,
+          cities: cities,
+        });
+      },
+    });
+  };
 
-  const cityList = new CityList({
-    $app,
-    initialState: this.state.cities,
-    handleLoadMore: async () => {
-      const newStartIdx = this.state.startIdx + 40;
-      const newCities = await getCities(
-        newStartIdx,
-        this.state.region,
-        this.state.sortBy,
-        this.state.searchWord
-      );
-      this.setState({
-        ...this.state,
-        startIdx: newStartIdx,
-        cities: {
-          cities: [...this.state.cities.cities, ...newCities.cities],
-          isEnd: newCities.isEnd,
-        },
-      });
-    },
-  });
+  const renderRegionList = () => {
+    new RegionList({
+      $app,
+      initialState: this.state.region,
+      handleRegion: async (region) => {
+        history.pushState(null, null, `${region}?sort=total`);
+        const cities = await getCities(0, region, 'total');
+        this.setState({
+          ...this.state,
+          startIdx: 0,
+          sortBy: 'tatal',
+          region: region,
+          searchWord: '',
+          cities: cities,
+        });
+      },
+    });
+  };
 
-  const cityDetail = new CityDetail();
+  const renderCityList = () => {
+    new CityList({
+      $app,
+      initialState: this.state.cities,
+      handleLoadMore: async () => {
+        const newStartIdx = this.state.startIdx + 40;
+        const newCities = await getCities(
+          newStartIdx,
+          this.state.region,
+          this.state.sortBy,
+          this.state.searchWord
+        );
+        this.setState({
+          ...this.state,
+          startIdx: newStartIdx,
+          cities: {
+            cities: [...this.state.cities.cities, ...newCities.cities],
+            isEnd: newCities.isEnd,
+          },
+        });
+      },
+      handleItemClick: (id) => {
+        history.pushState(null, null, `/city/${id}`);
+        this.setState({
+          ...this.state,
+          currentPage: `/city/${id}`,
+        });
+      },
+    });
+  };
+
+  const renderCityDetail = () => {
+    new CityDetail();
+  };
 
   this.setState = (newState) => {
     this.state = newState;
-    cityList.setState(this.state.cities);
-    header.setState({
-      sortBy: this.state.sortBy,
-      searchWord: this.state.searchWord,
-    });
-    regionList.setState(this.state.region);
+    render();
+    // cityList.setState(this.state.cities);
+    // header.setState({
+    //   sortBy: this.state.sortBy,
+    //   searchWord: this.state.searchWord,
+    // });
+    // regionList.setState(this.state.region);
   };
 
   window.addEventListener('popstate', async () => {
@@ -150,20 +168,41 @@ export default function App($app) {
       sortBy: prevSortby,
       searchWord: prevSearchWord,
       cities: prevCities,
+      currentPage: urlPath,
     });
   });
 
+  const render = () => {
+    const path = this.state.currentPage;
+    $app.innerHTML = '';
+
+    if (path.startsWith('/city/')) {
+      renderHeader();
+      renderCityDetail();
+    } else {
+      renderHeader();
+      renderRegionList();
+      renderCityList();
+    }
+  };
+
   const init = async () => {
-    const cities = await getCities(
-      this.state.startIdx,
-      this.state.region,
-      this.state.sortBy,
-      this.state.searchWord
-    );
-    this.setState({
-      ...this.state,
-      cities: cities,
-    });
+    const path = this.state.currentPage;
+
+    if (path.startsWith('/city/')) {
+      render();
+    } else {
+      const cities = await getCities(
+        this.state.startIdx,
+        this.state.region,
+        this.state.sortBy,
+        this.state.searchWord
+      );
+      this.setState({
+        ...this.state,
+        cities: cities,
+      });
+    }
   };
 
   init();
