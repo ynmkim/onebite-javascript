@@ -78,7 +78,23 @@ export default function App($app) {
       });
     },
   });
-  const regionList = new RegionList();
+  const regionList = new RegionList({
+    $app,
+    initialState: this.state.region,
+    handleRegion: async (region) => {
+      history.pushState(null, null, `${region}?sort=total`);
+      const cities = await getCities(0, region, 'total');
+      this.setState({
+        ...this.state,
+        startIdx: 0,
+        sortBy: 'tatal',
+        region: region,
+        searchWord: '',
+        cities: cities,
+      });
+    },
+  });
+
   const cityList = new CityList({
     $app,
     initialState: this.state.cities,
@@ -100,6 +116,7 @@ export default function App($app) {
       });
     },
   });
+
   const cityDetail = new CityDetail();
 
   this.setState = (newState) => {
@@ -109,6 +126,7 @@ export default function App($app) {
       sortBy: this.state.sortBy,
       searchWord: this.state.searchWord,
     });
+    regionList.setState(this.state.region);
   };
 
   const init = async () => {
