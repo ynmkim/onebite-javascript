@@ -14,14 +14,17 @@ export default function Header({
   $app.appendChild(this.$target);
 
   this.template = () => {
-    const { sortBy, searchWord } = this.state;
+    const { sortBy, searchWord, currentPage } = this.state;
     let temp = `
     <h1 class="title">
       <a href="/">✈️ Trip Wiki</a>
-    </h1>
-    <div class="filter-search-container">
-      <div class="filter">
-        <select id="sortList" class="sort-list">
+    </h1>`;
+
+    if (!currentPage.includes('/city')) {
+      temp += `
+      <div class="filter-search-container">
+        <div class="filter">
+          <select id="sortList" class="sort-list">
             <option value="total" ${
               sortBy === 'total' ? 'selected' : ''
             }>Total</option>
@@ -43,28 +46,32 @@ export default function Header({
             <option value="food" ${
               sortBy === 'food' ? 'selected' : ''
             }>Food</option>
-        </select>
+          </select>
+        </div>
+        <div class="search">
+          <input type="text" placeholder="Search" id="search" autocomplete="off" value=${searchWord}>
+        </div>
       </div>
-      <div class="search">
-        <input type="text" placeholder="Search" id="search" autocomplete="off" value=${searchWord}>
-      </div>
-    </div>
-    `;
-
+      `;
+    }
     return temp;
   };
 
   this.render = () => {
     this.$target.innerHTML = this.template();
-    document.getElementById('sortList').addEventListener('change', (event) => {
-      this.handleSortChange(event.target.value);
-    });
+    if (!this.state.currentPage.includes('/city')) {
+      document
+        .getElementById('sortList')
+        .addEventListener('change', (event) => {
+          this.handleSortChange(event.target.value);
+        });
 
-    document.getElementById('search').addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        this.handleSearchWord(event.target.value);
-      }
-    });
+      document.getElementById('search').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          this.handleSearchWord(event.target.value);
+        }
+      });
+    }
   };
 
   this.setState = (newState) => {
