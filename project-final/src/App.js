@@ -2,7 +2,7 @@ import Header from './components/Header.js';
 import RegionList from './components/RegionList.js';
 import CityList from './components/CityList.js';
 import CityDetail from './components/CityDetail.js';
-import { getCities } from './components/api.js';
+import { getCities, getCityDetail } from './components/api.js';
 
 export default function App($app) {
   const getSortBy = () => {
@@ -132,19 +132,18 @@ export default function App($app) {
     });
   };
 
-  const renderCityDetail = () => {
-    new CityDetail();
+  const renderCityDetail = async (cityId) => {
+    try {
+      const cityDatailData = await getCityDetail(cityId);
+      new CityDetail({ $app, initialState: cityDatailData });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   this.setState = (newState) => {
     this.state = newState;
     render();
-    // cityList.setState(this.state.cities);
-    // header.setState({
-    //   sortBy: this.state.sortBy,
-    //   searchWord: this.state.searchWord,
-    // });
-    // regionList.setState(this.state.region);
   };
 
   window.addEventListener('popstate', async () => {
@@ -177,8 +176,9 @@ export default function App($app) {
     $app.innerHTML = '';
 
     if (path.startsWith('/city/')) {
+      const cityId = path.split('/city/')[1];
       renderHeader();
-      renderCityDetail();
+      renderCityDetail(cityId);
     } else {
       renderHeader();
       renderRegionList();

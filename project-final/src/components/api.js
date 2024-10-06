@@ -26,3 +26,15 @@ export async function getCities(startIdx, region, sortBy, searchWord) {
     console.log(err);
   }
 }
+
+export async function getCityDetail(cityId) {
+  try {
+    const res = await fetch(`${API_URL}city/${cityId}`);
+    if (res) {
+      const data = await res.json();
+      return data;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
