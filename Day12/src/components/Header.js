@@ -16,16 +16,22 @@ export default function Header({
   this.template = () => {
     // html 코드는 아래와 같이 제공드립니다.
     // 필요한 코드를 추가적으로 작성해 웹 사이트를 완성하세요.
-    `<div class='header-content' id="title">
-      <img src='/src/img/ball.webp' width=40px height=40px></img>
-      포켓몬 도감</div>`;
-
+    const { searchWord, currentPage } = this.state;
+    let temp = `
+      <div class='header-content' id="title">
+        <img src='/src/img/ball.webp' width=40px height=40px />
+        포켓몬 도감
+    </div>
+    `;
     //main 페이지일 경우에만 '검색' 바가 나타나도록 코드를 작성하세요.
     if (!currentPage.includes('/detail')) {
       //decodeURIComponent는 한글이 깨지는 현상을 방지하기 위한 메서드입니다. () 안에 알맞은 값을 넣어주시면 됩니다.
-      `<div class="search">
-          <input type="text" placeholder="포켓몬을 검색하세요!" id="search" autocomplete="off" value=${decodeURIComponent()}></input>
-          <button id="search-button"><img src="src/img/search.png"></img></button>
+      temp += `
+      <div class="search">
+        <input type="text" placeholder="포켓몬을 검색하세요!" id="search" autocomplete="off" value=${decodeURIComponent(
+          searchWord
+        )}></input>
+        <button id="search-button"><img src="src/img/search.png" /></button>
       </div>`;
     }
 
@@ -34,6 +40,24 @@ export default function Header({
 
   this.render = () => {
     this.$target.innerHTML = this.template();
+
+    const $title = document.getElementById('title');
+    $title.addEventListener('click', () => {
+      this.handleClick();
+    });
+
+    const $searchInput = document.getElementById('search');
+    const $searchButton = document.getElementById('search-button');
+
+    $searchInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        this.handleSearch($searchInput.value);
+      }
+    });
+
+    $searchButton.addEventListener('click', () => {
+      this.handleSearch($searchInput.value);
+    });
   };
 
   this.setState = (newState) => {
