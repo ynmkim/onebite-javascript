@@ -129,6 +129,30 @@ export default function App($app) {
     regionList.setState(this.state.region);
   };
 
+  window.addEventListener('popstate', async () => {
+    const urlPath = window.location.pathname; // 현재 페이지의 URL 가져오기
+
+    const prevStartIdx = 0;
+    const prevRegion = urlPath.replace('/', '');
+    const prevSortby = getSortBy();
+    const prevSearchWord = getSearchWord();
+    const prevCities = await getCities(
+      prevStartIdx,
+      prevRegion,
+      prevSortby,
+      prevSearchWord
+    );
+
+    this.setState({
+      ...this.state,
+      startIdx: prevStartIdx,
+      region: prevRegion,
+      sortBy: prevSortby,
+      searchWord: prevSearchWord,
+      cities: prevCities,
+    });
+  });
+
   const init = async () => {
     const cities = await getCities(
       this.state.startIdx,
